@@ -6,10 +6,16 @@ import { Strategy as TwitterStrategy, Profile as TwitterProfile } from 'passport
 const DiscordStrategy = require('passport-discord').Strategy;
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { Strategy as FacebookStrategy } from 'passport-facebook';
-import cors from 'cors'; 
+import { getUser, getUserGoogle, updateUser } from './controller/userController';
+import cors from 'cors';
 import mongoose from 'mongoose';
-import userSchema from '../src/schema/userSchema';
-import UserModel from './model/userModel.';
+import UserModel from './model/userModel';
+import { get } from 'http';
+import cookieParser from 'cookie-parser';
+import { isAuthenticatedUser } from './middlewere/auth';
+import { TUser } from './types/user';
+import User from './model/userModel';
+import gameRouter from './routes/gameRoutes';
 
 dotenv.config();
 
@@ -17,18 +23,21 @@ const app: Express = express();
 const port = process.env.PORT || 8000;
 
 app.use(session({
-  secret: 'thisissecretkey', 
+  secret: 'thisissecretkey',
   resave: false,
   saveUninitialized: false
 }));
-
+app.use(cookieParser());
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(cors()); 
-app.use(express.json()); 
+app.use(cors({
+  origin: 'http://localhost:3000', credentials: true
+}));
+app.use(express.json());
 
-mongoose.connect('mongodb://127.0.0.1:27017/web3');
+const mongoURL = process.env.MONGO_URL || "";
+mongoose.connect(mongoURL);
 
 
 const db = mongoose.connection;
@@ -56,7 +65,7 @@ app.post('/store', async (req: Request, res: Response) => {
 passport.use(new TwitterStrategy({
   consumerKey: process.env.TWITTER_CONSUMER_KEY!,
   consumerSecret: process.env.TWITTER_CONSUMER_SECRET!,
-  callbackURL: "http://localhost:8000/auth/twitter/callback"
+  callbackURL: process.env.TWITTER_CONSUMER_CALLBACK_URL!,
 }, async (token, tokenSecret, profile, done) => {
   try {
     const username = (profile as TwitterProfile).username;
@@ -71,7 +80,7 @@ passport.use(new TwitterStrategy({
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID!,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-  callbackURL: "http://localhost:8000/auth/google/callback"
+  callbackURL: process.env.GOOGLE_CALLBACK_URL!
 }, async (accessToken, refreshToken, profile, done) => {
   try {
     const email = profile.emails && profile.emails[0] && profile.emails[0].value;
@@ -89,27 +98,16 @@ passport.use(new GoogleStrategy({
 passport.use(new DiscordStrategy({
   clientID: process.env.DISCORD_CLIENT_ID!,
   clientSecret: process.env.DISCORD_CLIENT_SECRET!,
-  callbackURL: "http://localhost:8000/auth/discord/callback",
-  scope: ['identify', 'email'] 
+  callbackURL: process.env.DISCORD_CALLBACK_URL!,
+  scope: ['identify', 'email']
 }, async (accessToken: string, _: string, profile: any, done: any) => {
   try {
     const username = profile.username;
-    const email = profile.email;
-
-    console.log("Successful authentication DISCORD username:", username);
-    console.log("Successful authentication DISCORD email:", email);
-
-    let user = await UserModel.findOne({ email });
-    if (!user) {
-      user = await UserModel.create({ email });
-    }
-
-    return done(null, user);
+    return done(null, { username });
   } catch (error) {
     return done(error);
   }
 }));
-
 
 passport.use(new FacebookStrategy({
   clientID: process.env.FACEBOOK_APP_ID!,
@@ -141,7 +139,7 @@ passport.deserializeUser((user: any, done) => {
   done(null, user);
 });
 
-app.get('/auth/twitter', passport.authenticate('twitter') );
+app.get('/auth/twitter', passport.authenticate('twitter'));
 
 // app.get('/auth/twitter/callback',
 //   passport.authenticate('twitter', { successRedirect: 'http://localhost:3000/setting', failureRedirect: 'http://localhost:3000' })
@@ -157,12 +155,18 @@ app.get('/auth/twitter', passport.authenticate('twitter') );
 //   }
 // );
 app.get('/auth/twitter/callback',
-  passport.authenticate('twitter', { failureRedirect: 'http://localhost:3000' }),
-  (req, res) => {
-    const username = req.user; 
-    console.log("Twitter Username:", username);
-    const redirectPath = `http://localhost:3000/setting?username=${username}`; 
-    res.redirect(redirectPath); 
+  passport.authenticate('twitter', { failureRedirect: 'http://localhost:3000' }), isAuthenticatedUser,
+  async (req, res) => {
+
+    const reqUser = req.user as TUser;
+    const user = await User.findById(reqUser._id)
+    if (user) {
+      user.twitterUsername = req.payloadName.username;
+      await user.save()
+    }
+
+    const redirectPath = `http://localhost:3000/setting`;
+    res.redirect(redirectPath);
   }
 );
 
@@ -172,13 +176,19 @@ app.get('/auth/twitter/callback',
 app.get('/auth/discord', passport.authenticate('discord'));
 
 app.get('/auth/discord/callback',
-  passport.authenticate('discord', { failureRedirect: '/' }),
-  (req, res) => {
-    res.redirect('http://localhost:3000/setting'); 
+  passport.authenticate('discord', { failureRedirect: '/' }), isAuthenticatedUser,
+  async (req, res) => {
+    const reqUser = req.user as TUser;
+    const user = await User.findById(reqUser._id)
+    if (user) {
+      user.discordUsername = req.payloadName.username;
+      await user.save()
+    }
+    res.redirect('http://localhost:3000/setting');
   }
 );
 
-app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'], state: "12345678" }));
 
 // app.get('/auth/google/callback',
 //   passport.authenticate('google', { failureRedirect: '/' }),
@@ -187,14 +197,11 @@ app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'em
 //   }
 // );
 
-app.get('/auth/google/callback',
-  passport.authenticate('google', { failureRedirect: '/' }),
-  (req: any, res: any) => {
-    const email = req.user ? req.user.email : ''; 
-    console.log("Hello", email);
-    res.redirect(`http://localhost:3000/setting?email=${email}`); 
-  }
-);
+app.post('/auth/user', getUserGoogle);
+app.get('/auth/getUser', isAuthenticatedUser, getUser);
+app.patch('/auth/user/:id', isAuthenticatedUser, updateUser);
+app.use('/game', gameRouter);
+
 // app.get('/auth/google/callback',
 //   passport.authenticate('google', { failureRedirect: '/' }),
 //   (req, res) => {
@@ -202,7 +209,7 @@ app.get('/auth/google/callback',
 //     console.log("Hello", email);
 //     const redirectUrl = `http://localhost:3000/setting?email=${email}`;
 //     res.json({ email, redirectUrl });
-  
+
 //   }
 // );
 
@@ -242,7 +249,7 @@ app.post('/save-user-data', async (req: Request, res: Response) => {
     console.log("Hit")
 
     const newUser = new UserModel({ email });
-    
+
     await newUser.save();
 
     res.status(201).json({ message: 'User data stored successfully' });
@@ -257,7 +264,7 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 app.get('/greet', (req: Request, res: Response) => {
-  const username = (req.user as any)?.username; 
+  const username = (req.user as any)?.username;
   res.send(`Welcome, ${username || 'Guest'}!`);
 });
 
