@@ -30,6 +30,7 @@
     "passport-facebook": "^3.0.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-twitter": "^1.0.4",
+    "short-uuid": "^4.2.2",
     "web3": "^4.7.0"
   },
   "devDependencies": {
