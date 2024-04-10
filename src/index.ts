@@ -16,6 +16,7 @@ import { isAuthenticatedUser } from './middlewere/auth';
 import { TUser } from './types/user';
 import User from './model/userModel';
 import gameRouter from './routes/gameRoutes';
+import tournamentRouter from './routes/tournaments';
 
 dotenv.config();
 
@@ -201,7 +202,7 @@ app.post('/auth/user', getUserGoogle);
 app.get('/auth/getUser', isAuthenticatedUser, getUser);
 app.patch('/auth/user/:id', isAuthenticatedUser, updateUser);
 app.use('/game', gameRouter);
-
+app.use('/tournament', tournamentRouter);
 // app.get('/auth/google/callback',
 //   passport.authenticate('google', { failureRedirect: '/' }),
 //   (req, res) => {
