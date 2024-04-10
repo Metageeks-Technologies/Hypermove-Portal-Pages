@@ -215,8 +215,6 @@ app.use('/tournament', tournamentRouter);
 // );
 
 
-
-
 app.get('/auth/facebook',
   passport.authenticate('facebook', { scope: ['email'] })
 );

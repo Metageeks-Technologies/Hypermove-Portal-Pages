@@ -15,7 +15,12 @@ const tournamentSchema = new Schema<Tournament>({
         type: String,
         required: true,
     },
-    mathDuration: {
+    scheduleType: {
+        type: String,
+        enum: ['daily', 'weekly'],
+        required: true,
+    },
+    matchDuration: {
         type: Number,
         required: true,
     },
@@ -24,10 +29,14 @@ const tournamentSchema = new Schema<Tournament>({
             type: Number,
             required: true,
         },
-        for: {
+        targetOf: {
             type: String,
             enum: ['kills', 'headshot'],
         },
+    },
+    reEntry: {
+        type: Boolean,
+        required: true,
     },
     bonus: {
         amount: {
@@ -61,7 +70,6 @@ const tournamentSchema = new Schema<Tournament>({
         type: Date,
         required: true,
     },
-
     participants: {
         type: [String],
     },

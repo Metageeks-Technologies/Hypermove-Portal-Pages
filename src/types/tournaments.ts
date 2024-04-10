@@ -5,11 +5,13 @@ export type Tournament = Document & {
     map: string;
     tournamentId: string;
     gameType: string;
-    mathDuration: number;
+    scheduleType: 'daily' | 'weekly';
+    matchDuration: number;
     goal: {
         target: number;
-        for: 'kills' | 'headshot';
+        targetOf: 'kills' | 'headshot';
     };
+    reEntry: boolean;
     bonus: {
         amount: number;
         chain: number;
