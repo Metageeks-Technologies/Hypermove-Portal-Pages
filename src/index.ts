@@ -17,6 +17,7 @@ import { TUser } from './types/user';
 import User from './model/userModel';
 import gameRouter from './routes/gameRoutes';
 import tournamentRouter from './routes/tournaments';
+import waitingRoomRouter from './routes/waitingRoom';
 
 dotenv.config();
 
@@ -203,6 +204,7 @@ app.get('/auth/getUser', isAuthenticatedUser, getUser);
 app.patch('/auth/user/:id', isAuthenticatedUser, updateUser);
 app.use('/game', gameRouter);
 app.use('/tournament', tournamentRouter);
+app.use('/waitingRoom', waitingRoomRouter);
 // app.get('/auth/google/callback',
 //   passport.authenticate('google', { failureRedirect: '/' }),
 //   (req, res) => {
