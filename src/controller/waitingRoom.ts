@@ -3,26 +3,27 @@ import ErrorHandler from "../utils/errorHandler";
 import Tournament from "../model/tournament";
 import WaitingRoom from "../model/waitingRoom";
 import User from "../model/userModel";
-
+import type { TWaitingRoom } from "../model/waitingRoom";
 
 export const addToWaitingRoom = catchAsyncError(async (req, res, next) => {
 
-    const { tournamentId, userId } = req.body;
+    const { tournamentId, userId, userWalletAddress } = req.body;
 
-    if (!tournamentId || !userId) {
-        return next(new ErrorHandler('Please provide tournamentId and userId', 400));
+    if (!tournamentId || !userId || !userWalletAddress) {
+        return next(new ErrorHandler('Please provide tournamentId , userId and userWalletAddress ', 400));
     }
     const tournament = await Tournament.findById(tournamentId);
     if (!tournament) {
         return next(new ErrorHandler('Tournament not found', 404));
     }
-    const waitingRoom = await WaitingRoom.findOne({ tournament: tournamentId });
+    const waitingRoom: TWaitingRoom | null = await WaitingRoom.findOne({ tournament: tournamentId });
     if (!waitingRoom) {
-        const waitingRoom = await WaitingRoom.create({ tournament: tournamentId, users: [userId] });
+        const waitingRoom = await WaitingRoom.create({ tournament: tournamentId, users: [{ userId, userWalletAddress }] });
         return res.status(200).json({ success: true, waitingRoom });
     }
-    if (!waitingRoom.users.includes(userId)) {
-        waitingRoom.users.push(userId);
+
+    if (!waitingRoom.users.some(user => user.userId === userId)) {
+        waitingRoom.users.push({ userId, userWalletAddress });
         await waitingRoom.save();
     }
 
@@ -31,15 +32,15 @@ export const addToWaitingRoom = catchAsyncError(async (req, res, next) => {
 
 export const isUserInWaitingRoom = catchAsyncError(async (req, res, next) => {
 
-    const { tournamentId, userId } = req.body;
-    if (!tournamentId || !userId) {
+    const { tournamentId, userId, userWalletAddress } = req.query;
+    if (!tournamentId || !userId || !userWalletAddress) {
         return next(new ErrorHandler('Please provide tournamentId and userId', 400));
     }
     const waitingRoom = await WaitingRoom.findOne({ tournament: tournamentId });
     if (!waitingRoom) {
         return res.status(200).json({ success: true, isUserInWaitingRoom: false });
     }
-    if (!waitingRoom.users.includes(userId)) {
+    if (!waitingRoom.users.some(user => user.userId.toString() === userId)) {
         return res.status(200).json({ success: true, isUserInWaitingRoom: false });
     }
     res.status(200).json({ success: true, isUserInWaitingRoom: true });

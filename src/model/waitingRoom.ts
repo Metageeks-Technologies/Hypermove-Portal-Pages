@@ -2,9 +2,12 @@ import mongoose, { Schema, Document } from 'mongoose';
 import Tournament from './tournament';
 import User from './userModel';
 
-type TWaitingRoom = Document & {
+export type TWaitingRoom = Document & {
     tournament: Tournament;
-    users: mongoose.Schema.Types.ObjectId[];
+    users: {
+        userId: mongoose.Schema.Types.ObjectId;
+        userWalletAddress: string;
+    }[];
 };
 
 const WaitingRoomSchema: Schema = new Schema<TWaitingRoom>({
@@ -16,10 +19,17 @@ const WaitingRoomSchema: Schema = new Schema<TWaitingRoom>({
     },
     users: [
         {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User',
-            required: true,
+            userId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'User',
+                required: true,
+            },
+            userWalletAddress: {
+                type: String,
+                required: true,
+            },
         }
+
     ],
 });
 
