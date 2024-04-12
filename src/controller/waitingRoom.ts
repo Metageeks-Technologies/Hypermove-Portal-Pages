@@ -46,4 +46,18 @@ export const isUserInWaitingRoom = catchAsyncError(async (req, res, next) => {
     res.status(200).json({ success: true, isUserInWaitingRoom: true });
 });
 
+export const getUserCount = catchAsyncError(async (req, res, next) => {
+
+    const { tournamentId } = req.query;
+    if (!tournamentId) {
+        return next(new ErrorHandler('Please provide tournamentId', 400));
+    }
+    const waitingRoom = await WaitingRoom.findOne({ tournament: tournamentId });
+    if (!waitingRoom) {
+        return next(new ErrorHandler('Tournament not found with this user name', 404));
+    }
+    res.status(200).json({ success: true, userCount: waitingRoom.users.length });
+}
+);
+
 
