@@ -15,7 +15,9 @@ const userSchema = new mongoose.Schema(
             required: true,
             trim: true,
         },
-
+        gameId: {
+            type: String,
+        },
         email: {
             type: String,
             required: true,

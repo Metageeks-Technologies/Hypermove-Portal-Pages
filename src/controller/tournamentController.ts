@@ -31,6 +31,5 @@ export const getWinner = catchAsyncError(async (req, res, next) => {
         return next(new ErrorHandler('Please provide tournamentId and userId', 400));
     }
 
-
     res.status(200).json({ success: true, message: `${userId} is winner` });
 });

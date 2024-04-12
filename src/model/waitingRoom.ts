@@ -5,8 +5,8 @@ import User from './userModel';
 export type TWaitingRoom = Document & {
     tournament: Tournament;
     users: {
-        userId: mongoose.Schema.Types.ObjectId;
         userWalletAddress: string;
+        gameId: string;
     }[];
 };
 
@@ -19,12 +19,11 @@ const WaitingRoomSchema: Schema = new Schema<TWaitingRoom>({
     },
     users: [
         {
-            userId: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'User',
+            userWalletAddress: {
+                type: String,
                 required: true,
             },
-            userWalletAddress: {
+            gameId: {
                 type: String,
                 required: true,
             },

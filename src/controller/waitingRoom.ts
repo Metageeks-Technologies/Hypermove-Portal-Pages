@@ -18,12 +18,12 @@ export const addToWaitingRoom = catchAsyncError(async (req, res, next) => {
     }
     const waitingRoom: TWaitingRoom | null = await WaitingRoom.findOne({ tournament: tournamentId });
     if (!waitingRoom) {
-        const waitingRoom = await WaitingRoom.create({ tournament: tournamentId, users: [{ userId, userWalletAddress }] });
+        const waitingRoom = await WaitingRoom.create({ tournament: tournamentId, users: [{ gameId: userId, userWalletAddress }] });
         return res.status(200).json({ success: true, waitingRoom });
     }
 
-    if (!waitingRoom.users.some(user => user.userId === userId)) {
-        waitingRoom.users.push({ userId, userWalletAddress });
+    if (!waitingRoom.users.some(user => user.gameId === userId)) {
+        waitingRoom.users.push({ gameId: userId, userWalletAddress });
         await waitingRoom.save();
     }
 
@@ -40,7 +40,7 @@ export const isUserInWaitingRoom = catchAsyncError(async (req, res, next) => {
     if (!waitingRoom) {
         return res.status(200).json({ success: true, isUserInWaitingRoom: false });
     }
-    if (!waitingRoom.users.some(user => user.userId.toString() === userId)) {
+    if (!waitingRoom.users.some(user => user.gameId === userId)) {
         return res.status(200).json({ success: true, isUserInWaitingRoom: false });
     }
     res.status(200).json({ success: true, isUserInWaitingRoom: true });

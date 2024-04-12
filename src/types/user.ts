@@ -2,6 +2,7 @@ export type TUser = {
     _id: string;
     firstName: string;
     lastName: string;
+    gameId: string;
     email: string;
     isEmailVerified: boolean;
     password: string;
