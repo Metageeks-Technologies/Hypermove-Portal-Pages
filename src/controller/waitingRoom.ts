@@ -54,7 +54,7 @@ export const getUserCount = catchAsyncError(async (req, res, next) => {
     }
     const waitingRoom = await WaitingRoom.findOne({ tournament: tournamentId });
     if (!waitingRoom) {
-        return next(new ErrorHandler('Tournament not found with this user name', 404));
+        return res.status(200).json({ success: true, userCount: 0 });
     }
     res.status(200).json({ success: true, userCount: waitingRoom.users.length });
 }
