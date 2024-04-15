@@ -70,6 +70,35 @@ const tournamentSchema = new Schema<Tournament>({
         type: Date,
         required: true,
     },
+    winners: [
+        {
+            position: {
+                type: Number,
+                required: true,
+                default: 1,
+            },
+            winnerId: {
+                type: String,
+                required: true,
+            },
+            walletAddress: {
+                type: String,
+                required: true,
+            },
+            headShot: {
+                type: Number,
+                required: true,
+                default: 0,
+            },
+            kills: {
+                type: Number,
+                required: true,
+                default: 0,
+            },
+
+        }
+    ],
+
     participants: {
         type: [String],
     },

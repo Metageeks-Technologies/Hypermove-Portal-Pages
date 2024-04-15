@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import { createTournament, getTournament, getTournaments, getWinner } from '../controller/tournamentController';
+import { createTournament, getTournament, getTournaments, addWinner } from '../controller/tournamentController';
 const tournamentRouter = express.Router();
 
 tournamentRouter.route('/').post(createTournament).get(getTournaments);
@@ -8,7 +8,7 @@ tournamentRouter.get('/getDate', (req: Request, res: Response) => {
     res.json({ date });
 }
 );
-tournamentRouter.route('/getWinner').get(getWinner);
+tournamentRouter.route('/winner').post(addWinner);
 tournamentRouter.get('/:id', getTournament);
 
 
