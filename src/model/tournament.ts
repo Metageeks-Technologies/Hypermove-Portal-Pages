@@ -70,14 +70,14 @@ const tournamentSchema = new Schema<Tournament>({
         type: Date,
         required: true,
     },
-    winners: [
+    participants: [
         {
             position: {
                 type: Number,
                 required: true,
                 default: 1,
             },
-            winnerId: {
+            userId: {
                 type: String,
                 required: true,
             },
@@ -99,9 +99,6 @@ const tournamentSchema = new Schema<Tournament>({
         }
     ],
 
-    participants: {
-        type: [String],
-    },
 });
 
 const Tournament = model<Tournament>('Tournament', tournamentSchema);

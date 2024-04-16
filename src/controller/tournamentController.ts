@@ -1,7 +1,8 @@
 import catchAsyncError from "../middlewere/catchAsyncError";
 import ErrorHandler from "../utils/errorHandler";
 import Tournament from "../model/tournament";
-
+import { sendTransaction } from "../utils/web3Methods";
+import type { TParticipants } from "../types/tournaments";
 
 export const createTournament = catchAsyncError(async (req, res, next) => {
 
@@ -24,26 +25,44 @@ export const getTournament = catchAsyncError(async (req, res, next) => {
     res.status(200).json({ success: true, tournament });
 });
 
-export const addWinner = catchAsyncError(async (req, res, next) => {
+export const addWinners = catchAsyncError(async (req, res, next) => {
 
-    const { tournamentId, userId, userWalletAddress, headShot, kills } = req.body;
-    if (!tournamentId || !userId || !userWalletAddress || headShot !=== undefined || kills === undefined) {
-        return next(new ErrorHandler('Please provide tournamentId,headShot,kills and userId', 400));
+    type RequestBody = {
+        participants: TParticipants[];
     }
-const tournament = await Tournament.findById(tournamentId);
-if (!tournament) {
-    return next(new ErrorHandler('Tournament not found', 404));
-}
-const winner = {
-    position: tournament.winners.length + 1,
-    winnerId: userId,
-    walletAddress: userWalletAddress,
-    headShot,
-    kills
-}
-tournament.winners.push(winner);
-await tournament.save({ validateBeforeSave: false });
 
-res.status(200).json({ success: true, message: `${userId} is winner` });
+    const { participants } = req.body as RequestBody;
+    const tournamentId = req.params.id;
+    if (participants.length === 0) {
+        return next(new ErrorHandler('Please provide participants', 400));
+    }
+    const tournament = await Tournament.findById(tournamentId);
+    if (!tournament) {
+        return next(new ErrorHandler('Tournament not found', 404));
+    }
+    tournament.participants = participants;
+
+    const savedTournament = await tournament.save();
+    if (!savedTournament) {
+        return next(new ErrorHandler('Failed to save winners', 500));
+    };
+
+    const playerAddresses = participants.map(participant => participant.walletAddress);
+
+    const participantsData = participants.map(participant => {
+        return {
+            tornamentId: tournamentId,
+            headshot: participant.headShot,
+            kills: participant.kills,
+        }
+    });
+
+    try {
+        await sendTransaction(playerAddresses, participantsData);
+    } catch (error: any) {
+        return next(new ErrorHandler(error.message, 500));
+    }
+
+    res.status(200).json({ success: true, message: 'Participants added successfully' });
 });
 

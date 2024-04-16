@@ -1,8 +1,8 @@
 import { Document } from 'mongoose';
 
-export type TWinner = {
+export type TParticipants = {
     position: number;
-    winnerId: string;
+    userId: string;
     walletAddress: string;
     headShot: number;
     kills: number;
@@ -28,9 +28,8 @@ export type Tournament = Document & {
         amount: number;
         currency: string;
     };
-    winners: TWinner[];
+    participants: TParticipants[];
     players: number;
     startDate: Date;
     endDate: Date;
-    participants: string[];
 }
