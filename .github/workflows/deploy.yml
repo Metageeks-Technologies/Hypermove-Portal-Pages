@@ -20,7 +20,7 @@ jobs:
 
       - name: SSH and run script
         uses: appleboy/ssh-action@master
-        with:
+        env:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
