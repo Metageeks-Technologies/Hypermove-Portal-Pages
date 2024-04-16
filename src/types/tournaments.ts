@@ -6,6 +6,7 @@ export type TParticipants = {
     walletAddress: string;
     headShot: number;
     kills: number;
+    userScore: number;
 }
 
 export type Tournament = Document & {

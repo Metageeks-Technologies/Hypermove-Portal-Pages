@@ -95,7 +95,11 @@ const tournamentSchema = new Schema<Tournament>({
                 required: true,
                 default: 0,
             },
-
+            userScore: {
+                type: Number,
+                required: true,
+                default: 0,
+            }
         }
     ],
 

@@ -1,4 +1,3 @@
-
 export const addParticipantsAbi = [
     {
         inputs: [
@@ -63,7 +62,7 @@ export const addParticipantsAbi = [
                 components: [
                     {
                         internalType: "string",
-                        name: "tornamentId",
+                        name: "tournamentId",
                         type: "string",
                     },
                     {
@@ -74,6 +73,11 @@ export const addParticipantsAbi = [
                     {
                         internalType: "uint256",
                         name: "kills",
+                        type: "uint256",
+                    },
+                    {
+                        internalType: "uint256",
+                        name: "score",
                         type: "uint256",
                     },
                 ],
@@ -115,7 +119,7 @@ export const addParticipantsAbi = [
             },
             {
                 internalType: "string",
-                name: "tornamentId",
+                name: "tournamentId",
                 type: "string",
             },
         ],
@@ -125,7 +129,7 @@ export const addParticipantsAbi = [
                 components: [
                     {
                         internalType: "string",
-                        name: "tornamentId",
+                        name: "tournamentId",
                         type: "string",
                     },
                     {
@@ -136,6 +140,11 @@ export const addParticipantsAbi = [
                     {
                         internalType: "uint256",
                         name: "kills",
+                        type: "uint256",
+                    },
+                    {
+                        internalType: "uint256",
+                        name: "score",
                         type: "uint256",
                     },
                 ],
@@ -181,6 +190,10 @@ export const addParticipantsAbi = [
         type: "function",
     },
 ];
+
+
+
+
 
 
 

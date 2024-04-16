@@ -1,1 +1,1 @@
-export const addParticipantsContractAddress = "0xF7bE86E353cb0C99A56c605439EE8Dc7432098C8";
+export const addParticipantsContractAddress = "0xF159f928C853eE188a021cFf4a6AD8dFF5DDeC43";

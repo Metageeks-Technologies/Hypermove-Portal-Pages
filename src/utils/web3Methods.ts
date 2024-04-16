@@ -18,7 +18,7 @@ const addParticipantsContract = new web3.eth.Contract(addParticipantsAbi, addPar
 //     { tornamentId: "jgaua6718", headshot: 8, kills: 3 },
 // ];
 
-export const sendTransaction = async (playerAddresses: string[], updateData: { tornamentId: string, headshot: number, kills: number }[]) => {
+export const sendTransaction = async (playerAddresses: string[], updateData: { tournamentId: string, headshot: number, kills: number, score: number }[]) => {
     if (ownerAddress === undefined || ownerPrivateKey === undefined) {
         throw new Error("Owner address or private key is not provided");
     }
@@ -46,6 +46,7 @@ export const sendTransaction = async (playerAddresses: string[], updateData: { t
         const receipt = await web3.eth.sendSignedTransaction(
             signedTx.rawTransaction
         );
+        console.log("Transaction receipt:", receipt.transactionHash.toString());
         return receipt.transactionHash.toString();
     } catch (error: any) {
         throw new Error(error.message);

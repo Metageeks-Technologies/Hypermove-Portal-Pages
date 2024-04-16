@@ -51,9 +51,10 @@ export const addWinners = catchAsyncError(async (req, res, next) => {
 
     const participantsData = participants.map(participant => {
         return {
-            tornamentId: tournamentId,
+            tournamentId: tournamentId,
             headshot: participant.headShot,
             kills: participant.kills,
+            score: participant.userScore
         }
     });
 
