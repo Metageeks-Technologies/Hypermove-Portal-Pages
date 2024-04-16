@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const rpcUrl = process.env.RPC_URL;
-
+//console.log(rpcUrl);
 if (rpcUrl === undefined) {
     throw new Error("RPC_URL is not provided");
 }
