@@ -18,13 +18,7 @@ jobs:
         with:
           node-version: "20.12.1" # replace with your Node.js version
 
-      - name: Install dependencies
-        run: npm install # or use 'npm install' if you don't have a package-lock.json
-
-      - name: Build
-        run: npm run build # remove this line if you don't have a build script
-
-      - name: Deploy to EC2
+      - name: SSH and run script
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
