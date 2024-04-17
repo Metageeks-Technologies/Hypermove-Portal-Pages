@@ -29,7 +29,7 @@ app.use(session({
 app.use(cookieParser());
 app.use(passport.initialize());
 app.use(passport.session());
-
+console.log(process.env.CLIENT_URL)
 app.use(cors({
   origin: process.env.CLIENT_URL, credentials: true
 }));
