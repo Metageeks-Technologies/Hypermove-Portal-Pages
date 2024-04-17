@@ -1,24 +1,21 @@
-import express, { Express, Request, Response } from 'express';
-import dotenv from 'dotenv';
-import passport from 'passport';
-import session from 'express-session';
-import { Strategy as TwitterStrategy, Profile as TwitterProfile } from 'passport-twitter';
-const DiscordStrategy = require('passport-discord').Strategy;
-import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
-import { Strategy as FacebookStrategy } from 'passport-facebook';
-import { getUser, getUserGoogle, updateUser } from './controller/userController';
-import cors from 'cors';
-import mongoose from 'mongoose';
-import UserModel from './model/userModel';
-import { get } from 'http';
 import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import express, { Express, Request, Response } from 'express';
+import session from 'express-session';
+import mongoose from 'mongoose';
+import passport from 'passport';
+import { Strategy as FacebookStrategy } from 'passport-facebook';
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
+import { Profile as TwitterProfile, Strategy as TwitterStrategy } from 'passport-twitter';
+import { getUser, getUserGoogle, updateUser } from './controller/userController';
 import { isAuthenticatedUser } from './middlewere/auth';
-import { TUser } from './types/user';
-import User from './model/userModel';
+import { default as User, default as UserModel } from './model/userModel';
 import gameRouter from './routes/gameRoutes';
 import tournamentRouter from './routes/tournaments';
 import waitingRoomRouter from './routes/waitingRoom';
-
+import { TUser } from './types/user';
+const DiscordStrategy = require('passport-discord').Strategy;
 dotenv.config();
 
 const app: Express = express();
