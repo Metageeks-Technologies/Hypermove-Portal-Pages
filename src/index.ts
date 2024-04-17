@@ -34,7 +34,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(cors({
-  origin: 'http://localhost:3000', credentials: true
+  origin: process.env.CLIENT_URL, credentials: true
 }));
 app.use(express.json());
 
@@ -114,7 +114,7 @@ passport.use(new DiscordStrategy({
 passport.use(new FacebookStrategy({
   clientID: process.env.FACEBOOK_APP_ID!,
   clientSecret: process.env.FACEBOOK_APP_SECRET!,
-  callbackURL: "http://localhost:8000/auth/facebook/callback",
+  callbackURL: process.env.FACEBOOK_CALLBACK_URL!,
   profileFields: ['id', 'emails']
 }, async (accessToken, refreshToken, profile, done) => {
   try {
@@ -143,21 +143,8 @@ passport.deserializeUser((user: any, done) => {
 
 app.get('/auth/twitter', passport.authenticate('twitter'));
 
-// app.get('/auth/twitter/callback',
-//   passport.authenticate('twitter', { successRedirect: 'http://localhost:3000/setting', failureRedirect: 'http://localhost:3000' })
-// );
-
-// app.get('/auth/twitter/callback',
-//   passport.authenticate('twitter', { failureRedirect: 'http://localhost:3000' }),
-//   (req, res) => {
-//     const username = req.user; 
-//     console.log("Twitter Username:", username);
-//     const redirectPath = 'http://localhost:3000/setting'; 
-//     res.json({ username, redirectPath }); 
-//   }
-// );
 app.get('/auth/twitter/callback',
-  passport.authenticate('twitter', { failureRedirect: 'http://localhost:3000' }), isAuthenticatedUser,
+  passport.authenticate('twitter', { failureRedirect: process.env.CLIENT_URL }), isAuthenticatedUser,
   async (req, res) => {
 
     const reqUser = req.user as TUser;
@@ -167,7 +154,7 @@ app.get('/auth/twitter/callback',
       await user.save()
     }
 
-    const redirectPath = `http://localhost:3000/setting`;
+    const redirectPath = `${process.env.CLIENT_URL}/setting`;
     res.redirect(redirectPath);
   }
 );
@@ -186,18 +173,11 @@ app.get('/auth/discord/callback',
       user.discordUsername = req.payloadName.username;
       await user.save()
     }
-    res.redirect('http://localhost:3000/setting');
+    res.redirect(`${process.env.CLIENT_URL}/setting`);
   }
 );
 
 app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'], state: "12345678" }));
-
-// app.get('/auth/google/callback',
-//   passport.authenticate('google', { failureRedirect: '/' }),
-//   (req, res) => {
-//     res.redirect('http://localhost:3000/setting'); 
-//   }
-// );
 
 app.post('/auth/user', getUserGoogle);
 app.get('/auth/getUser', isAuthenticatedUser, getUser);
@@ -205,17 +185,6 @@ app.patch('/auth/user/:id', isAuthenticatedUser, updateUser);
 app.use('/game', gameRouter);
 app.use('/tournament', tournamentRouter);
 app.use('/waitingRoom', waitingRoomRouter);
-// app.get('/auth/google/callback',
-//   passport.authenticate('google', { failureRedirect: '/' }),
-//   (req, res) => {
-//     const email = req.user ? req.user.email : ''; 
-//     console.log("Hello", email);
-//     const redirectUrl = `http://localhost:3000/setting?email=${email}`;
-//     res.json({ email, redirectUrl });
-
-//   }
-// );
-
 
 app.get('/auth/facebook',
   passport.authenticate('facebook', { scope: ['email'] })
@@ -224,7 +193,7 @@ app.get('/auth/facebook',
 app.get('/auth/facebook/callback',
   passport.authenticate('facebook', { failureRedirect: '/login' }),
   (req, res) => {
-    res.redirect('http://localhost:3000/setting');
+    res.redirect(`${process.env.CLIENT_URL}/setting`);
   }
 );
 

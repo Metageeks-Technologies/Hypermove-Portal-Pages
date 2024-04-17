@@ -59,7 +59,10 @@ export const addWinners = catchAsyncError(async (req, res, next) => {
     });
 
     try {
-        await sendTransaction(playerAddresses, participantsData);
+        const hash = await sendTransaction(playerAddresses, participantsData);
+        savedTournament.addParticipantsHash = hash;
+        await savedTournament.save();
+
     } catch (error: any) {
         return next(new ErrorHandler(error.message, 500));
     }

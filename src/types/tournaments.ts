@@ -30,6 +30,7 @@ export type Tournament = Document & {
         currency: string;
     };
     participants: TParticipants[];
+    addParticipantsHash: string;
     players: number;
     startDate: Date;
     endDate: Date;
