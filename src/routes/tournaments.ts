@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import { createTournament, getTournament, getTournaments, addWinners } from '../controller/tournamentController';
+import { createTournament, getTournament, getTournaments, addWinners, updateTournament } from '../controller/tournamentController';
 const tournamentRouter = express.Router();
 
 tournamentRouter.route('/').post(createTournament).get(getTournaments);
@@ -8,6 +8,8 @@ tournamentRouter.get('/getDate', (req: Request, res: Response) => {
     res.json({ date });
 }
 );
+tournamentRouter.get('/getTournaments', getTournaments);
+tournamentRouter.patch('/updateTournament', updateTournament);
 
 tournamentRouter.route('/:id').get(getTournament).patch(addWinners);
 
