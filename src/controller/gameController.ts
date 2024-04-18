@@ -25,3 +25,23 @@ export const uploadPreview = catchAsyncError(async (req, res, next) => {
     res.status(200).json({ success: true, urls });
 }
 )
+
+export const getGameDetails = catchAsyncError(async (req, res, next) => {
+
+    const game = await Game.findById(req.params.id);
+
+    if (!game) {
+        return next(new ErrorHandler('Game not found', 404));
+    }
+    res.status(200).json({ success: true, game });
+}
+)
+
+export const getAllGames = catchAsyncError(async (req, res, next) => {
+
+    const games = await Game.find();
+    res.status(200).json({ success: true, games });
+}
+)
+
+

@@ -26,27 +26,27 @@ export const getTournament = catchAsyncError(async (req, res, next) => {
 });
 
 export const updateTournament = catchAsyncError(async (req, res, next) => {
-    const { id } = req.params;
-    const tournamentData = req.body;
+
+
+    const { tournamentData, id } = req.body;
 
     let tournament = await Tournament.findById(id);
-
-    if(!tournament) {
+    if (!tournament) {
         return next(new ErrorHandler('Tournament not found', 404));
     }
 
-     tournament = await Tournament.findByIdAndUpdate(id, tournamentData, {
-        new:true,
-            runValidators: true,
-        });
-    
-        if (!tournament) {
-            return next(new ErrorHandler('Failed to update tournament', 500));
-        }
-    
-        res.status(200).json({ success: true, tournament });
-        
-    
+    tournament = await Tournament.findByIdAndUpdate(id, tournamentData, {
+        new: true,
+        runValidators: true,
+    });
+
+    if (!tournament) {
+        return next(new ErrorHandler('Failed to update tournament', 500));
+    }
+
+    res.status(200).json({ success: true, tournament });
+
+
 });
 
 export const addWinners = catchAsyncError(async (req, res, next) => {
