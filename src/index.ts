@@ -14,6 +14,7 @@ import { default as User, default as UserModel } from './model/userModel';
 import gameRouter from './routes/gameRoutes';
 import tournamentRouter from './routes/tournaments';
 import waitingRoomRouter from './routes/waitingRoom';
+import profileRouter from './routes/profileRoues';
 import { TUser } from './types/user';
 const DiscordStrategy = require('passport-discord').Strategy;
 dotenv.config();
@@ -182,6 +183,7 @@ app.patch('/auth/user/:id', isAuthenticatedUser, updateUser);
 app.use('/game', gameRouter);
 app.use('/tournament', tournamentRouter);
 app.use('/waitingRoom', waitingRoomRouter);
+app.use('/profile', profileRouter);
 
 app.get('/auth/facebook',
   passport.authenticate('facebook', { scope: ['email'] })
