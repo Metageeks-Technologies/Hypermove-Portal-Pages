@@ -13,7 +13,7 @@ console.log(bucketName, region, accessKeyId, secretAccessKey);
 
 
 
-export const getSignedUrlForUpload = async (fileName: string, uuid: string) => {
+export const getSignedUrlForUpload = async (fileName: string, uuid: string, folder: string='banners') => {
     if (!bucketName || !region || !accessKeyId || !secretAccessKey) {
         throw new Error('S3 client not initialized');
     }
@@ -25,7 +25,7 @@ export const getSignedUrlForUpload = async (fileName: string, uuid: string) => {
             secretAccessKey: secretAccessKey || "",
         },
     });
-    const s3key = `banners/${uuid}/${fileName}`
+    const s3key = `${folder}/${uuid}/${fileName}`
     const command = new PutObjectCommand({
         Bucket: bucketName,
         Key: s3key,

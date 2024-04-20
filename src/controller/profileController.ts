@@ -11,7 +11,7 @@ export const addProfileDetails = catchAsyncError(async (req,res,next) => {
 export const uploadBannerprofile = catchAsyncError(async (req, res, next) => {
 
   const { fileName, uuid } = req.body;
-  const url = await getSignedUrlForUpload(fileName, uuid);
+  const url = await getSignedUrlForUpload(fileName, uuid, 'kols-profile');
   res.status(200).json({ success: true, url });
 });
 
