@@ -16,6 +16,17 @@ const gameSchema: Schema = new Schema({
         }
     ],
     overView: { type: String, required: true },
+    gameReview: {type: String, required: true},
+    osrequirement: {type: String, required: true},
+    minos: {type: String, required: true},
+    cpu: {type: String, required: true},
+    mincpu: {type: String, required: true},
+    hdd: {type: String, required: true},
+    minhdd: {type: String, required: true},
+    ram: {type: String, required: true},
+    minram: {type: String, required: true},
+    gpu: {type: String, required: true},
+    mingpu: {type: String, required: true},
     banner: { type: String, required: true },
     previewImages: [{ type: String, required: true }],
 });

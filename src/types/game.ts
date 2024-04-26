@@ -15,6 +15,15 @@ export type TGame = Document & {
     releaseDate: Date;
     socialMedia: SocialMedia[];
     overView: string;
+    gameReview: string;
+    osrequirement: string;
+    minos: string;
+    cpu: string;
+    mincpu:string,
+    hdd: string;
+    minhdd:string,
+    ram: string;
+    minram:string,
     banner: string;
     previewImages: string[];
 }

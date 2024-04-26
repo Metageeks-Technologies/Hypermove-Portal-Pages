@@ -16,6 +16,7 @@ import tournamentRouter from './routes/tournaments';
 import waitingRoomRouter from './routes/waitingRoom';
 import profileRouter from './routes/profileRoues';
 import { TUser } from './types/user';
+import weaponRouter from './routes/weaponRouter';
 const DiscordStrategy = require('passport-discord').Strategy;
 dotenv.config();
 
@@ -181,6 +182,7 @@ app.post('/auth/user', getUserGoogle);
 app.get('/auth/getUser', isAuthenticatedUser, getUser);
 app.patch('/auth/user/:id', isAuthenticatedUser, updateUser);
 app.use('/game', gameRouter);
+app.use('/weapon', weaponRouter)
 app.use('/tournament', tournamentRouter);
 app.use('/waitingRoom', waitingRoomRouter);
 app.use('/profile', profileRouter);
